@@ -1,0 +1,74 @@
+import 'package:bottom_bar_with_sheet/bottom_bar_with_sheet.dart';
+import 'package:bottom_bar_with_sheet/src/theme/secondary_action_button_theme.dart';
+import 'package:flutter/material.dart';
+import 'dart:math' as math;
+
+class SecondaryActionButton extends StatelessWidget {
+  const SecondaryActionButton({
+    Key? key,
+    required this.onTap,
+    required this.secondaryActionButtonTheme,
+    required this.arrowAnimation,
+    required this.arrowAnimationController,
+    required this.enable,
+    this.button,
+  }) : super(key: key);
+
+  final Function() onTap;
+  final SecondaryActionButtonTheme secondaryActionButtonTheme;
+  final Widget? button;
+  final AnimationController arrowAnimationController;
+  final Animation arrowAnimation;
+  final bool enable;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!enable) {
+      return SizedBox();
+    }
+    return Container(
+      color: Colors.transparent,
+      transform: secondaryActionButtonTheme.transform ??
+          Matrix4.translationValues(0.0, 0.0, 0.0),
+      padding: secondaryActionButtonTheme.margin,
+      child: button != null
+          ? InkWell(
+              child: button,
+              onTap: onTap,
+            )
+          : ClipOval(
+              child: Material(
+                color: _getIconBGColor(context),
+                child: InkWell(
+                  onTap: onTap,
+                  splashColor: secondaryActionButtonTheme.splash,
+                  child: AnimatedBuilder(
+                    animation: arrowAnimationController,
+                    builder: (BuildContext context, Widget? child) {
+                      return Transform.rotate(
+                        angle: (arrowAnimation.value * 2.0 * math.pi) as double,
+                        child: child,
+                      );
+                    },
+                    child: SizedBox(
+                      width: secondaryActionButtonTheme.size,
+                      height: secondaryActionButtonTheme.size,
+                      child: Opacity(
+                        opacity: 1.0,
+                        child: Center(
+                          child: secondaryActionButtonTheme.icon,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+    );
+  }
+
+  Color? _getIconBGColor(BuildContext context) {
+    return secondaryActionButtonTheme.color ??
+        Theme.of(context).iconTheme.color;
+  }
+}
